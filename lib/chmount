@@ -1,0 +1,58 @@
+#!/bin/bash
+#
+# AUTOR: PK Ernandes
+# EMAIL: suporte@ernandes.info
+#
+#
+
+
+function :chmount(){
+
+  set --
+  if mountpoint -q /mnt; then 
+    if [ "$(id -u)" -ne 0 ]; then    
+      echo "error - você não é usuário root!"; echo
+      exit 1        
+    else
+      mount -t proc /proc /mnt/proc
+      mount -o bind /dev /mnt/dev
+      mount -o bind /dev/pts /mnt/dev/pts
+      mount -o bind /sys /mnt/sys
+      mount -t tmpfs tmpfs /mnt/run
+      LANG=C.UTF-8 chroot /mnt /bin/bash
+    fi  
+  else
+    echo " error - nenhum volume montado em '/mnt'!\n"
+  fi
+}
+      
+
+function :chumount(){
+
+  if mountpoint -q /mnt; then
+    if [ "$(id -u)" -ne 0 ]; then
+      echo "error - você não é usuário root!"; echo
+      exit 1
+    else
+      if mountpoint -q /mnt/boot/efi; then
+        umount /mnt/boot/efi
+      fi
+
+      if mountpoint -q /mnt/boot; then
+        umount /mnt/boot
+      fi
+
+      umount /mnt/run
+      umount /mnt/sys
+      umount /mnt/dev/pts
+      umount /mnt/dev
+      umount /mnt/proc
+      umount /mnt
+    fi
+  else
+    echo " error - nenhum volume montado em '/mnt'!\n"
+  fi
+}
+
+
+# vim:set ts=2 sts=2 sw=2 et ft=sh:

@@ -1,0 +1,37 @@
+#!/bin/bash
+#
+# AUTOR: PK Ernandes
+# EMAIL: suporte@ernandes.info
+#
+#
+
+
+function :interface(){
+ 
+  set --
+  interfaces=$(ls /sys/class/net | grep -v -E 'lo')
+  for interface in ${interfaces}; do
+    if test -e /sys/class/net/${interface}/device; then
+      id=$(head -n1 /sys/class/net/${interface}/ifindex)
+      state=$(head -n1 /sys/class/net/${interface}/operstate)
+      address=$(head -n1 /sys/class/net/${interface}/address)
+      mtu=$(head -n1 /sys/class/net/${interface}/mtu)
+      rx_byte=$(head -n1 /sys/class/net/${interface}/statistics/rx_bytes | numfmt --to=iec --format='%.2f')
+      tx_byte=$(head -n1 /sys/class/net/${interface}/statistics/tx_bytes | numfmt --to=iec --format='%.2f')
+      if [ "$state" = "up" ]; then 
+        speed=$(head -n1 /sys/class/net/${interface}/speed)
+      else
+        speed="-"
+      fi
+      driver=$(grep "DRIVER" /sys/class/net/${interface}/device/uevent | cut -d'=' -f2)
+      out="${id};${interface};${state};${address};${mtu};${speed};${driver};${rx_byte};${tx_byte}"
+      set -- $@ $out
+    fi
+  done
+
+  echo
+  printf "%s\n" "--;---------;-----;-----------;---;-----;------;--------;--------" "${@}" | column -t -s';' --table-columns 'id,interface,state,mac address,mtu,speed,driver,rx_bytes,tx_bytes'; echo
+}
+
+
+# vim:set ts=2 sts=2 sw=2 et ft=sh:

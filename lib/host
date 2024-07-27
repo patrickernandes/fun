@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# AUTOR: PK Ernandes
+# EMAIL: suporte@ernandes.info
+#
+#
+
+function :host(){
+
+  #lscpu | egrep 'Model name|Socket|Thread|NUMA|CPU\(s\)'
+  CPU_MODEL=$(grep 'model name' /proc/cpuinfo | head -n1 | awk -F ':' '{print $2}' | xargs)
+  CPU_PHY=$(grep 'physical id' /proc/cpuinfo | sort | uniq | wc -l)
+  CPU_CORES=$(grep -c processor /proc/cpuinfo)  ##nproc --all
+  MEM_TOTAL=$(free -h | grep "Mem" | awk '{print $2}')
+  MEM_USED=$(free -h | grep "Mem" | awk '{print $3}')
+  MEM_FREE=$(free -h | grep "Mem" | awk '{print $4}')
+  MEM_SWAP=$(free -h | grep "Swap" | awk '{print $2}')
+  BIOS=$(test -d "/sys/firmware/efi" && echo "uefi" || echo "legacy")
+  KERNEL=$(uname -r)
+  #_VIRT=$(egrep -wo 'vmx|svm' /proc/cpuinfo  | sort | uniq)
+  VIRT=$(lscpu | grep -E "Virtualization|Virtualização" | cut -d ':' -f2 | xargs)
+  STARTED=$(uptime -s)
+
+  set -- "cpu.model;${CPU_MODEL}" \
+  "cpu.phy;${CPU_PHY}" \
+  "cpu.cores;${CPU_CORES}" \
+  "mem.total;${MEM_TOTAL}" \
+  "mem.used;${MEM_USED}" \
+  "mem.free;${MEM_FREE}" \
+  "mem.swap;${MEM_SWAP}" \
+  "bios;${BIOS}" \
+  "kernel;${KERNEL}" \
+  "virtualization;${VIRT}" \
+  "started;${STARTED}" \
+
+  echo
+  printf "%s\n" "----;-----" "${@}" | column -t -s';' --table-columns name,value; echo
+}
+
+
+# vim:set ts=2 sts=2 sw=2 et ft=sh:
