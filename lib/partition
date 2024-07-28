@@ -11,16 +11,15 @@ function :partition(){
   set --
   _partitions=$(ls /sys/class/block/ | grep -E 'hd[a-z][1-9]|sd[a-z][1-9]|nvme[a-z][1-9]|fd[0-9]') 
   for _partition in ${_partitions}; do
-    _size=$(head /sys/class/block/"${_partition}"/size)
-    _size_gb=$((${_size} / 2 / 1024 / 1024))
-    _type=$(lsblk -n -a -f -l -o FSTYPE /dev/${_partition})
-    _uuid=$(lsblk -n -a -f -l -o UUID /dev/${_partition})
-    _out="/dev/${_partition};${_size_gb};${_type};${_uuid}"
+    _size=$(blockdev --getsize64 /dev/"${_partition}" | numfmt --to=iec --format='%.2f')
+    _type=$(lsblk -n -a -f -l -o FSTYPE /dev/"${_partition}")
+    _uuid=$(lsblk -n -a -f -l -o UUID /dev/"${_partition}")
+    _out="/dev/${_partition};${_size};${_type};${_uuid}"
     set -- $@ $_out
   done
 
   echo
-  printf "%s\n" "---------;--------;----;----" "${@}" | column -t -s';' --table-columns 'partition,size(gb),type,uuid'; echo
+  printf "%s\n" "---------;----;----;----" "${@}" | column -t -s';' --table-columns 'partition,size,type,uuid'; echo
 }
 
       

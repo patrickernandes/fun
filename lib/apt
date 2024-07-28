@@ -1,0 +1,39 @@
+#!/bin/bash
+#
+# AUTOR: PK Ernandes
+# EMAIL: suporte@ernandes.info
+#
+#
+
+function :update(){
+
+  apt update
+}
+
+
+function :uplist(){
+
+  apt list --upgradeable
+}
+
+
+function :upgrade(){
+
+  apt upgrade
+}
+
+
+function :se(){
+
+  apt search $@
+}
+
+
+function :rccl(){
+
+  apt remove --purge $(dpkg --list | grep "^rc" | cut -d" " -f 3)
+}
+
+
+
+# vim:set ts=2 sts=2 sw=2 et ft=sh:
