@@ -8,7 +8,7 @@
 function :disk(){
 
   set --
-  _disks=$(ls /sys/class/block/ | grep -v -E 'hd[a-z][1-9]|sd[a-z][1-9]|nvme[a-z][1-9]|dm-[0-9]|loop[0-9]|sr[0-9]|fd[0-9]|ram[0-9]')
+  _disks=$(ls /sys/class/block/ | grep -v -E 'hd[a-z][1-9]|sd[a-z][1-9]|nvme[a-z][1-9]|dm-[0-9]|loop[0-9]|sr[0-9]|fd[0-9]|ram[0-9]' | sed 's/@//')
   for _disk in ${_disks}; do
     _size=$(blockdev --getsize64 /dev/"${_disk}" | numfmt --to=iec --format='%.2f')
     _out="/dev/${_disk};${_size}"

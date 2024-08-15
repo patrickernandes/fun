@@ -18,5 +18,10 @@ Example to run.. Show network physical interfaces:
 :interface
 ```
 
+To load functions automatically when you login, for example, you can add the command below to your ".bashrc" file:
+```
+for file in "$HOME/fun/lib/*"; do source $file; done
+```
+
 
 Thanks!

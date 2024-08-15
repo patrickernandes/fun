@@ -9,7 +9,7 @@
 function :partition(){
 
   set --
-  _partitions=$(ls /sys/class/block/ | grep -E 'hd[a-z][1-9]|sd[a-z][1-9]|nvme[a-z][1-9]|fd[0-9]') 
+  _partitions=$(ls /sys/class/block/ | grep -E 'hd[a-z][1-9]|sd[a-z][1-9]|nvme[a-z][1-9]|fd[0-9]' | sed 's/@//') 
   for _partition in ${_partitions}; do
     _size=$(blockdev --getsize64 /dev/"${_partition}" | numfmt --to=iec --format='%.2f')
     _type=$(lsblk -n -a -f -l -o FSTYPE /dev/"${_partition}")
