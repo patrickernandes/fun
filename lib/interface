@@ -11,7 +11,7 @@ function :interface(){
   set --
   interfaces=$(ls /sys/class/net | grep -v -E 'lo' | sed 's/@//')
   for interface in ${interfaces}; do
-    if test -e /sys/class/net/${interface}/device; then
+    if test -d /sys/class/net/${interface}/device; then
       id=$(head -n1 /sys/class/net/${interface}/ifindex)
       state=$(head -n1 /sys/class/net/${interface}/operstate)
       address=$(head -n1 /sys/class/net/${interface}/address)
